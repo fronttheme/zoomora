@@ -2,6 +2,7 @@
 
 A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features. Perfect for showcasing images and videos in a beautiful, user-friendly interface.
 
+[![View Live Demo](https://img.shields.io/badge/View-Live%20Demo-667eea?style=for-the-badge&logo=github)](https://fronttheme.github.io/zoomora/)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
@@ -279,8 +280,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by modern lightbox libraries
 - Built with love for the web community
 
-## 📮 Support
+## 🔗 Resources
 
+- 🟢 [Live Demo](https://fronttheme.github.io/zoomora/)
 - 🐛 [Report a bug](https://github.com/fronttheme/zoomora/issues)
 - 💡 [Request a feature](https://github.com/fronttheme/zoomora/issues)
 - 📖 [Documentation](https://github.com/fronttheme/zoomora)
