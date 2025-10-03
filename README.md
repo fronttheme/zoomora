@@ -1,5 +1,7 @@
 # Zoomora Lightbox
 
+![Zoomora Lightbox Banner](assets/zoomora-lightbox-banner.jpg)
+
 A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features. Perfect for showcasing images and videos in a beautiful, user-friendly interface.
 
 [![View Live Demo](https://img.shields.io/badge/View-Live%20Demo-667eea?style=for-the-badge&logo=github)](https://fronttheme.github.io/zoomora/)
