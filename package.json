@@ -5,7 +5,6 @@
   "type": "module",
   "main": "dist/zoomora.umd.js",
   "module": "dist/zoomora.es.js",
-  "types": "dist/zoomora.d.ts",
   "files": [
     "dist",
     "src",
