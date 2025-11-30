@@ -499,6 +499,7 @@
       <p class="section-desc">Click any image to experience the magic</p>
     </div>
     <div class="gallery-layout">
+
       <div class="gallery-item">
         <img src="assets/images/square-1.webp" alt="Misty morning in alpine meadow"
              data-src="assets/images/square-1.webp"
@@ -507,6 +508,26 @@
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Alpine</span>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <img src="assets/images/large.webp" alt="Large image"
+             data-src="assets/images/large.webp"
+             data-zoomora="main-gallery"
+             loading="lazy">
+        <div class="gallery-overlay">
+          <span class="gallery-label">Large image</span>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <img src="assets/images/small.webp" alt="Small image"
+             data-src="assets/images/small.webp"
+             data-zoomora="main-gallery"
+             loading="lazy">
+        <div class="gallery-overlay">
+          <span class="gallery-label">Small image</span>
         </div>
       </div>
 
@@ -731,6 +752,8 @@
 </footer>
 
 <script src="dist/zoomora.umd.min.js"></script>
+<!--<script type="module" src="src/zoomora.js"></script>-->
+
 <script>
   // Tab switching
   function showTab(tabId) {

@@ -37,7 +37,12 @@ export default defineConfig({
           entryFileNames: 'zoomora.umd.min.js',
           plugins: [terser({
             format: {
-              comments: /^!/
+              comments: /^!/ // Keep license comments
+            },
+            compress: {
+              drop_console: true, // ✅ Remove console.log
+              drop_debugger: true, // ✅ Remove debugger statements
+              pure_funcs: ['console.log', 'console.info', 'console.debug'] // ✅ Remove specific console methods
             }
           })]
         },
@@ -54,7 +59,12 @@ export default defineConfig({
           entryFileNames: 'zoomora.es.min.js',
           plugins: [terser({
             format: {
-              comments: /^!/
+              comments: /^!/ // Keep license comments
+            },
+            compress: {
+              drop_console: true, // ✅ Remove console.log
+              drop_debugger: true, // ✅ Remove debugger statements
+              pure_funcs: ['console.log', 'console.info', 'console.debug'] // ✅ Remove specific console methods
             }
           })]
         }

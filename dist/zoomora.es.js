@@ -24,7 +24,7 @@ var __commonJS = (cb, mod) => function __require() {
 var require_zoomora_es = __commonJS({
   "zoomora.es.js"(exports, module) {
     /*!
-     * Zoomora Lightbox Plugin v1.0.0
+     * Zoomora Lightbox Plugin v1.1.0
      * A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
      *
      * Copyright (c) 2025 Faruk Ahmed (FrontTheme)
@@ -102,6 +102,7 @@ var require_zoomora_es = __commonJS({
           this.autoHideDelay = 3e3;
           this.isControlsVisible = true;
           this.idleTimer = null;
+          this.lastDragTime = 0;
           this.boundMethods = {
             handleDocumentClick: this.handleDocumentClick.bind(this),
             handleKeydown: this.handleKeydown.bind(this),
@@ -154,6 +155,11 @@ var require_zoomora_es = __commonJS({
             console.warn("Zoomora: Lightbox already exists in DOM");
             return;
           }
+          const autoHideButtonHTML = this.options.showAutoHideToggle ? `
+        <button class="zoomora-btn" id="zoomoraAutoHideBtn" title="Toggle Auto-Hide Controls">
+          <i class="zoomorai-controls-off"></i>
+        </button>
+      ` : "";
           const zoomoraHTML = `
         <div class="zoomora" id="zoomoraLightbox">
           <div class="zoomora-container">
@@ -163,9 +169,7 @@ var require_zoomora_es = __commonJS({
                 <button class="zoomora-btn" id="zoomoraThumbnailBtn" title="Toggle Thumbnails">
                   <i class="zoomorai-thumbnails"></i>
                 </button>
-                <button class="zoomora-btn" id="zoomoraAutoHideBtn" title="Toggle Auto-Hide Controls">
-                  <i class="zoomorai-controls-off"></i>
-                </button>
+                ${autoHideButtonHTML}
                 <button class="zoomora-btn" id="zoomoraZoomBtn" title="Zoom">
                   <i class="zoomorai-zoom"></i>
                 </button>
@@ -239,10 +243,12 @@ var require_zoomora_es = __commonJS({
           this.addEventListener(this.content, "touchstart", this.boundMethods.handleTouchStart, { passive: false });
           this.addEventListener(this.content, "touchmove", this.boundMethods.handleTouchMove, { passive: false });
           this.addEventListener(this.content, "touchend", this.boundMethods.handleTouchEnd);
-          this.addEventListener(document.getElementById("zoomoraAutoHideBtn"), "click", () => this.toggleAutoHide());
-          this.addEventListener(this.zoomora, "mousemove", () => this.handleUserActivity());
-          this.addEventListener(this.zoomora, "touchstart", () => this.handleUserActivity());
-          this.addEventListener(this.zoomora, "keydown", () => this.handleUserActivity());
+          if (this.options.showAutoHideToggle) {
+            this.addEventListener(document.getElementById("zoomoraAutoHideBtn"), "click", () => this.toggleAutoHide());
+            this.addEventListener(this.zoomora, "mousemove", () => this.handleUserActivity());
+            this.addEventListener(this.zoomora, "touchstart", () => this.handleUserActivity());
+            this.addEventListener(this.zoomora, "keydown", () => this.handleUserActivity());
+          }
         }
         /**
          * Add event listener with cleanup tracking
@@ -330,8 +336,11 @@ var require_zoomora_es = __commonJS({
          * @param {Event} e - Click event
          */
         handleContentClick(e) {
+          if (Date.now() - this.lastDragTime < 200) {
+            return;
+          }
           const media = e.target.closest(".zoomora-media");
-          if (media && !media.classList.contains("no-zoom") && !this.isDragging) {
+          if (media && !media.classList.contains("no-zoom")) {
             this.toggleZoom();
           }
         }
@@ -572,6 +581,10 @@ var require_zoomora_es = __commonJS({
             console.error("Zoomora: No source found for item");
             return;
           }
+          this.isZoomed = false;
+          this.currentX = 0;
+          this.currentY = 0;
+          this.currentScale = 1;
           this.loading.style.display = "block";
           if (this.slidesContainer) {
             this.slidesContainer.innerHTML = "";
@@ -795,6 +808,48 @@ var require_zoomora_es = __commonJS({
           }
         }
         /**
+         * Calculate zoom levels for an image
+         * @param {HTMLImageElement} img - Image element
+         * @returns {Object} Zoom configuration
+         */
+        /**
+         * Calculate zoom levels for an image
+         * @param {HTMLImageElement} img - Image element
+         * @returns {Object} Zoom configuration
+         */
+        calculateZoomLevels(img) {
+          if (!img || !img.naturalWidth || !img.naturalHeight) {
+            return { canZoom: false, levels: [], currentLevel: 0 };
+          }
+          const container = this.content.getBoundingClientRect();
+          const containerWidth = container.width;
+          const containerHeight = container.height;
+          const naturalWidth = img.naturalWidth;
+          const naturalHeight = img.naturalHeight;
+          const scaleToFitWidth = containerWidth / naturalWidth;
+          const scaleToFitHeight = containerHeight / naturalHeight;
+          const fitScale = Math.min(scaleToFitWidth, scaleToFitHeight);
+          if (fitScale >= 0.95) {
+            return { canZoom: false, levels: [], currentLevel: 0 };
+          }
+          const levels = [1];
+          if (fitScale * 1.5 <= 1) levels.push(1.5);
+          if (fitScale * 2 <= 1) levels.push(2);
+          if (fitScale * 3 <= 1) levels.push(3);
+          const actualSizeScale = 1 / fitScale;
+          if (actualSizeScale > levels[levels.length - 1]) {
+            levels.push(actualSizeScale);
+          }
+          return {
+            canZoom: levels.length > 1,
+            levels,
+            currentLevel: 0,
+            baseScale: fitScale,
+            naturalWidth,
+            naturalHeight
+          };
+        }
+        /**
          * Update counter display
          */
         updateCounter() {
@@ -894,25 +949,55 @@ var require_zoomora_es = __commonJS({
          */
         toggleZoom() {
           const media = this.content.querySelector(".zoomora-media");
-          if (!media || media.tagName !== "IMG" || media.classList.contains("no-zoom")) return;
-          this.isZoomed = !this.isZoomed;
-          media.classList.toggle("zoomed", this.isZoomed);
-          if (this.isZoomed) {
-            const zoomRatio = parseFloat(media.dataset.zoomRatio) || 2;
-            let zoomScale = Math.min(zoomRatio, this.options.maxZoomScale);
-            if (zoomRatio > 2.5) {
-              zoomScale = Math.min(zoomRatio * 0.7, 2.5);
-            }
-            media.style.transform = `scale(${zoomScale})`;
-            media.style.cursor = "grab";
-            media.dataset.currentZoomScale = zoomScale;
-            this.currentScale = zoomScale;
-          } else {
+          if (!media || media.tagName !== "IMG") return;
+          const zoomConfig = this.calculateZoomLevels(media);
+          if (!zoomConfig.canZoom) {
+            console.log("Image cannot be zoomed (already at full size or larger)");
+            return;
+          }
+          if (!media.dataset.zoomLevel) {
+            media.dataset.zoomLevel = "0";
+          }
+          let currentLevel = parseInt(media.dataset.zoomLevel) || 0;
+          currentLevel++;
+          if (currentLevel >= zoomConfig.levels.length) {
+            currentLevel = 0;
+          }
+          const targetScale = zoomConfig.levels[currentLevel];
+          media.dataset.zoomLevel = currentLevel.toString();
+          if (currentLevel === 0) {
+            this.isZoomed = false;
+            this.isDragging = false;
+            media.classList.remove("dragging");
             media.style.transform = "";
-            media.style.cursor = "";
+            media.style.cursor = "pointer";
+            media.classList.remove("zoomed");
             this.currentX = 0;
             this.currentY = 0;
             this.currentScale = 1;
+          } else {
+            this.isZoomed = true;
+            this.currentScale = targetScale;
+            this.currentX = 0;
+            this.currentY = 0;
+            media.style.transform = `translate(0px, 0px) scale(${targetScale})`;
+            media.style.cursor = "grab";
+            media.classList.add("zoomed");
+            console.log(`Zoomed to level ${currentLevel}/${zoomConfig.levels.length - 1} (${(targetScale * 100).toFixed(0)}%)`);
+          }
+        }
+        /**
+         * Update image transform based on current state
+         * @param {HTMLElement} media - Media element
+         */
+        updateImageTransform(media) {
+          if (!media) return;
+          if (this.currentScale === 1) {
+            media.style.transform = "";
+          } else {
+            const translateX = this.currentX / this.currentScale;
+            const translateY = this.currentY / this.currentScale;
+            media.style.transform = `scale(${this.currentScale}) translate(${translateX}px, ${translateY}px)`;
           }
         }
         /**
@@ -1010,15 +1095,19 @@ var require_zoomora_es = __commonJS({
           const media = this.content.querySelector(".zoomora-media");
           if (!media || !this.isZoomed) return;
           this.isDragging = true;
+          media.classList.add("dragging");
           media.style.cursor = "grabbing";
           this.startX = e.clientX || e.touches && e.touches[0].clientX || 0;
           this.startY = e.clientY || e.touches && e.touches[0].clientY || 0;
-          const transform = media.style.transform;
-          const scaleMatch = transform.match(/scale\(([^)]+)\)/);
-          const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
-          this.currentScale = scaleMatch ? parseFloat(scaleMatch[1]) : 1;
-          this.currentX = translateMatch ? parseFloat(translateMatch[1]) : 0;
-          this.currentY = translateMatch ? parseFloat(translateMatch[2]) : 0;
+          const transform = window.getComputedStyle(media).transform;
+          if (transform && transform !== "none") {
+            const matrix = new DOMMatrix(transform);
+            this.currentX = matrix.m41;
+            this.currentY = matrix.m42;
+          } else {
+            this.currentX = 0;
+            this.currentY = 0;
+          }
           e.preventDefault();
         }
         /**
@@ -1028,21 +1117,33 @@ var require_zoomora_es = __commonJS({
         drag(e) {
           if (!this.isDragging) return;
           e.preventDefault();
+          const media = this.content.querySelector(".zoomora-media");
+          if (!media) return;
           const clientX = e.clientX || e.touches && e.touches[0].clientX || 0;
           const clientY = e.clientY || e.touches && e.touches[0].clientY || 0;
           const deltaX = clientX - this.startX;
           const deltaY = clientY - this.startY;
-          const newX = this.currentX + deltaX;
-          const newY = this.currentY + deltaY;
-          const media = this.content.querySelector(".zoomora-media");
-          if (!media) return;
+          let newX = this.currentX + deltaX;
+          let newY = this.currentY + deltaY;
+          const container = this.content.getBoundingClientRect();
           const mediaRect = media.getBoundingClientRect();
-          const scale = this.currentScale;
-          const maxX = mediaRect.width * (scale - 1) / 2;
-          const maxY = mediaRect.height * (scale - 1) / 2;
-          const constrainedX = Math.max(-maxX, Math.min(maxX, newX));
-          const constrainedY = Math.max(-maxY, Math.min(maxY, newY));
-          media.style.transform = `scale(${scale}) translate(${constrainedX}px, ${constrainedY}px)`;
+          const overflowX = Math.max(0, (mediaRect.width - container.width) / 2);
+          const overflowY = Math.max(0, (mediaRect.height - container.height) / 2);
+          if (overflowX > 0) {
+            newX = Math.max(-overflowX, Math.min(overflowX, newX));
+          } else {
+            newX = 0;
+          }
+          if (overflowY > 0) {
+            newY = Math.max(-overflowY, Math.min(overflowY, newY));
+          } else {
+            newY = 0;
+          }
+          media.style.transform = `translate(${newX}px, ${newY}px) scale(${this.currentScale})`;
+          this.startX = clientX;
+          this.startY = clientY;
+          this.currentX = newX;
+          this.currentY = newY;
         }
         /**
          * End drag operation
@@ -1050,9 +1151,13 @@ var require_zoomora_es = __commonJS({
         endDrag() {
           if (!this.isDragging) return;
           this.isDragging = false;
+          this.lastDragTime = Date.now();
           const media = this.content.querySelector(".zoomora-media");
-          if (media && this.isZoomed) {
-            media.style.cursor = "grab";
+          if (media) {
+            media.classList.remove("dragging");
+            if (this.isZoomed) {
+              media.style.cursor = "grab";
+            }
           }
         }
         /**

@@ -1,6 +1,6 @@
 {
   "name": "zoomora",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features",
   "type": "module",
   "main": "dist/zoomora.umd.js",
