@@ -1,8 +1,8 @@
 /*!
- * Zoomora Lightbox Plugin v1.1.0
+ * Zoomora Lightbox Plugin v1.2.0
  * A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
  *
- * Copyright (c) 2025 Faruk Ahmed (FrontTheme)
+ * Copyright (c) 2026 Faruk Ahmed (FrontTheme)
  * Licensed under MIT License
  */
 
@@ -46,6 +46,7 @@ import './styles/zoomora.scss';
         maxZoomScale: 3, // Maximum zoom scale
         zoomStep: 0.1, // Zoom step for scroll wheel
         animationDuration: 300, // Animation duration in ms
+        closeOnBackgroundClick: true, // Close lightbox when clicking on background
         onOpen: null, // Callback when lightbox opens
         onClose: null, // Callback when lightbox closes
         onNext: null, // Callback when navigating to next item
@@ -247,7 +248,7 @@ import './styles/zoomora.scss';
       // Lightbox click to close
       this.addEventListener(this.zoomora, 'click', this.boundMethods.handleZoomoraClick);
 
-      // Content click for zoom toggle
+      // Content click for zoom toggle and background click
       this.addEventListener(this.content, 'click', this.boundMethods.handleContentClick);
 
       // Mouse drag events
@@ -344,14 +345,23 @@ import './styles/zoomora.scss';
      * Handle fullscreen change events
      */
     handleFullscreenChange() {
-      const isInFullscreen = document.fullscreenElement ||
+      const isInFullscreen = !!(
+        document.fullscreenElement ||
         document.webkitFullscreenElement ||
         document.mozFullScreenElement ||
-        document.msFullscreenElement;
+        document.msFullscreenElement
+      );
 
+      // Only update if state changed from fullscreen to not fullscreen
       if (!isInFullscreen && this.isFullscreen) {
         this.isFullscreen = false;
         this.zoomora.classList.remove('fullscreen');
+        this.updateButtons();
+      }
+      // Update if entering fullscreen
+      else if (isInFullscreen && !this.isFullscreen) {
+        this.isFullscreen = true;
+        this.zoomora.classList.add('fullscreen');
         this.updateButtons();
       }
     }
@@ -361,7 +371,7 @@ import './styles/zoomora.scss';
      * @param {Event} e - Click event
      */
     handleZoomoraClick(e) {
-      if (e.target === this.zoomora) {
+      if (e.target === this.zoomora && this.options.closeOnBackgroundClick) {
         this.close();
       }
     }
@@ -376,9 +386,60 @@ import './styles/zoomora.scss';
         return;
       }
 
-      const media = e.target.closest('.zoomora-media');
-      if (media && !media.classList.contains('no-zoom')) {
-        this.toggleZoom();
+      // Don't close on header clicks
+      if (this.header && this.header.contains(e.target)) {
+        return;
+      }
+
+      // Don't close on button clicks
+      if (e.target.closest('button')) {
+        return;
+      }
+
+      // Check if click is directly on actual media element (img, video, iframe)
+      const mediaElement = e.target.closest('.zoomora-media, .zoomora-video, .zoomora-iframe');
+
+      if (mediaElement) {
+        // Only toggle zoom for images
+        if (mediaElement.classList.contains('zoomora-media') && !mediaElement.classList.contains('no-zoom')) {
+          this.toggleZoom();
+        }
+        return;
+      }
+
+      // Check if clicking inside video container but not on video itself
+      const videoContainer = e.target.closest('.zoomora-video-container');
+      if (videoContainer) {
+        // If clicking on the play button, don't close
+        if (e.target.closest('.zoomora-play-button')) {
+          return;
+        }
+        // If clicking on background area of video container, close
+        if (this.options.closeOnBackgroundClick) {
+          this.close();
+        }
+        return;
+      }
+
+      // Check if clicking on background elements (including when zoomed)
+      // This checks the actual target element, not just closest()
+      const clickedElement = e.target;
+      const isBackgroundElement =
+        clickedElement.classList.contains('zoomora-content') ||
+        clickedElement.classList.contains('zoomora-slide-container') ||
+        clickedElement.classList.contains('zoomora-slide') ||
+        clickedElement.classList.contains('zoomora-slides-container') ||
+        clickedElement.id === 'zoomoraContent' ||
+        clickedElement.id === 'zoomoraSlidesContainer';
+
+      if (isBackgroundElement && this.options.closeOnBackgroundClick) {
+        this.close();
+        return;
+      }
+
+      // If we reach here and no media was clicked, close
+      if (this.options.closeOnBackgroundClick) {
+        this.close();
       }
     }
 
@@ -975,11 +1036,6 @@ import './styles/zoomora.scss';
      * @param {HTMLImageElement} img - Image element
      * @returns {Object} Zoom configuration
      */
-    /**
-     * Calculate zoom levels for an image
-     * @param {HTMLImageElement} img - Image element
-     * @returns {Object} Zoom configuration
-     */
     calculateZoomLevels(img) {
       if (!img || !img.naturalWidth || !img.naturalHeight) {
         return {canZoom: false, levels: [], currentLevel: 0};
@@ -1151,7 +1207,6 @@ import './styles/zoomora.scss';
       const zoomConfig = this.calculateZoomLevels(media);
 
       if (!zoomConfig.canZoom) {
-        console.log('Image cannot be zoomed (already at full size or larger)');
         return;
       }
 
@@ -1193,8 +1248,6 @@ import './styles/zoomora.scss';
         media.style.transform = `translate(0px, 0px) scale(${targetScale})`;
         media.style.cursor = 'grab';
         media.classList.add('zoomed');
-
-        console.log(`Zoomed to level ${currentLevel}/${zoomConfig.levels.length - 1} (${(targetScale * 100).toFixed(0)}%)`);
       }
     }
 
@@ -1231,21 +1284,50 @@ import './styles/zoomora.scss';
      */
     enterFullscreen() {
       const element = this.zoomora;
-      const requestFullscreen = element.requestFullscreen ||
-        element.webkitRequestFullscreen ||
-        element.mozRequestFullScreen ||
-        element.msRequestFullscreen;
 
-      if (requestFullscreen) {
-        requestFullscreen.call(element).then(() => {
+      try {
+        // Try standard API first
+        if (element.requestFullscreen) {
+          element.requestFullscreen()
+            .then(() => {
+              this.isFullscreen = true;
+              this.zoomora.classList.add('fullscreen');
+              this.updateButtons();
+            })
+            .catch(err => {
+              console.warn('Zoomora: Fullscreen request failed:', err.message);
+              this.fallbackFullscreen();
+            });
+        }
+        // Try webkit (Safari, older Chrome)
+        else if (element.webkitRequestFullscreen) {
+          element.webkitRequestFullscreen();
+          // Webkit doesn't return a promise, so set state immediately
           this.isFullscreen = true;
           this.zoomora.classList.add('fullscreen');
           this.updateButtons();
-        }).catch(err => {
-          console.warn('Zoomora: Could not enter fullscreen:', err);
+        }
+        // Try moz (Firefox)
+        else if (element.mozRequestFullScreen) {
+          element.mozRequestFullScreen();
+          this.isFullscreen = true;
+          this.zoomora.classList.add('fullscreen');
+          this.updateButtons();
+        }
+        // Try ms (IE11)
+        else if (element.msRequestFullscreen) {
+          element.msRequestFullscreen();
+          this.isFullscreen = true;
+          this.zoomora.classList.add('fullscreen');
+          this.updateButtons();
+        }
+        // Fallback to CSS fullscreen
+        else {
+          console.warn('Zoomora: Fullscreen API not supported, using CSS fallback');
           this.fallbackFullscreen();
-        });
-      } else {
+        }
+      } catch (error) {
+        console.error('Zoomora: Error entering fullscreen:', error);
         this.fallbackFullscreen();
       }
     }
@@ -1254,30 +1336,61 @@ import './styles/zoomora.scss';
      * Exit fullscreen mode
      */
     exitFullscreen() {
-      const isInFullscreen = document.fullscreenElement ||
+      // First check if we're actually in fullscreen
+      const isInFullscreen = !!(
+        document.fullscreenElement ||
         document.webkitFullscreenElement ||
         document.mozFullScreenElement ||
-        document.msFullscreenElement;
+        document.msFullscreenElement
+      );
 
-      if (isInFullscreen) {
-        const exitFullscreen = document.exitFullscreen ||
-          document.webkitExitFullscreen ||
-          document.mozCancelFullScreen ||
-          document.msExitFullscreen;
+      if (!isInFullscreen) {
+        // Not in real fullscreen, just exit CSS fullscreen
+        this.fallbackExitFullscreen();
+        return;
+      }
 
-        if (exitFullscreen) {
-          exitFullscreen.call(document).then(() => {
-            this.isFullscreen = false;
-            this.zoomora.classList.remove('fullscreen');
-            this.updateButtons();
-          }).catch(err => {
-            console.warn('Zoomora: Could not exit fullscreen:', err);
-            this.fallbackExitFullscreen();
-          });
-        } else {
+      try {
+        // Try standard API first
+        if (document.exitFullscreen) {
+          document.exitFullscreen()
+            .then(() => {
+              this.isFullscreen = false;
+              this.zoomora.classList.remove('fullscreen');
+              this.updateButtons();
+            })
+            .catch(err => {
+              console.warn('Zoomora: Exit fullscreen failed:', err.message);
+              this.fallbackExitFullscreen();
+            });
+        }
+        // Try webkit
+        else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+          this.isFullscreen = false;
+          this.zoomora.classList.remove('fullscreen');
+          this.updateButtons();
+        }
+        // Try moz
+        else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+          this.isFullscreen = false;
+          this.zoomora.classList.remove('fullscreen');
+          this.updateButtons();
+        }
+        // Try ms
+        else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+          this.isFullscreen = false;
+          this.zoomora.classList.remove('fullscreen');
+          this.updateButtons();
+        }
+        // Fallback
+        else {
           this.fallbackExitFullscreen();
         }
-      } else {
+      } catch (error) {
+        console.error('Zoomora: Error exiting fullscreen:', error);
         this.fallbackExitFullscreen();
       }
     }

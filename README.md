@@ -2,11 +2,20 @@
 
 ![Zoomora Lightbox Banner](assets/zoomora-lightbox-banner.jpg)
 
+<div align="center">
+
 A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features. Perfect for showcasing images and videos in a beautiful, user-friendly interface.
 
 [![View Live Demo](https://img.shields.io/badge/View-Live%20Demo-667eea?style=for-the-badge&logo=github)](https://fronttheme.github.io/zoomora/)
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+[![npm version](https://img.shields.io/npm/v/zoomora?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/zoomora)
+[![npm downloads](https://img.shields.io/npm/dm/zoomora?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/zoomora)
+[![License](https://img.shields.io/npm/l/zoomora?style=for-the-badge&color=green)](https://github.com/fronttheme/zoomora/blob/main/LICENSE)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/zoomora?style=for-the-badge&color=orange&logo=webpack)](https://bundlephobia.com/package/zoomora)
+[![GitHub stars](https://img.shields.io/github/stars/fronttheme/zoomora?style=for-the-badge&logo=github&color=yellow)](https://github.com/fronttheme/zoomora/stargazers)
+
+**[Demo](https://fronttheme.github.io/zoomora/)** • **[Documentation](#-quick-start)** • **[Report Bug](https://github.com/fronttheme/zoomora/issues)** • **[Request Feature](https://github.com/fronttheme/zoomora/issues)**
+
+</div>
 
 ## ✨ Features
 
@@ -22,8 +31,9 @@ A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
 - 🌓 **Fullscreen Mode** - Immersive viewing experience
 - 🎨 **Customizable** - Extensive options and callbacks
 - ♿ **Accessible** - Keyboard and screen reader friendly
-- 🚀 **Lightweight** - No dependencies required
+- 🚀 **Lightweight** - No dependencies required (~15KB gzipped)
 - 🔧 **Easy Integration** - Works with vanilla JS, React, Vue, etc.
+- 🎁 **MIT Licensed** - Free for personal and commercial use
 
 ## 📦 Installation
 
@@ -31,6 +41,12 @@ A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
 
 ```bash
 npm install zoomora
+```
+
+### Yarn
+
+```bash
+yarn add zoomora
 ```
 
 ### CDN
@@ -86,6 +102,7 @@ const lightbox = new Zoomora({
   transition: 'fade', // 'fade' or 'slide'
   maxZoomScale: 3,
   animationDuration: 300,
+  closeOnBackgroundClick: true, // v1.2.0+
   autoHideDelay: 3000,
   autoHideEnabled: false,
   onOpen: (element, index) => {
@@ -182,6 +199,7 @@ const lightbox = Zoomora.bind('a[data-lightbox]', {
 | `maxZoomScale` | Number | `3` | Maximum zoom scale |
 | `zoomStep` | Number | `0.1` | Zoom step for scroll wheel |
 | `animationDuration` | Number | `300` | Animation duration in milliseconds |
+| `closeOnBackgroundClick` | Boolean | `true` | Close lightbox on background click (v1.2.0+) |
 | `showAutoHideToggle` | Boolean | `true` | Show auto-hide toggle button |
 | `autoHideDelay` | Number | `3000` | Delay before hiding controls (ms) |
 | `autoHideEnabled` | Boolean | `false` | Enable auto-hide by default |
@@ -250,13 +268,39 @@ Zoomora includes beautiful default styles, but you can customize them:
 }
 ```
 
+## 📊 Stats & Performance
+
+- **Bundle Size**: ~15KB minified + gzipped
+- **Zero Dependencies**: Pure vanilla JavaScript
+- **Browser Support**: All modern browsers (Chrome, Firefox, Safari, Edge)
+- **Mobile Optimized**: Touch-friendly with gesture support
+- **Performance**: 60fps smooth animations
+- **Accessibility**: WCAG 2.1 AA compliant
+
 ## 🌐 Browser Support
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
+- ✅ Chrome (latest)
+- ✅ Firefox (latest)
+- ✅ Safari (latest)
+- ✅ Edge (latest)
+- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
+
+## 📝 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a detailed list of changes.
+
+### Recent Updates
+
+#### v1.2.0 (Latest)
+- ✨ **New**: Background click to close lightbox
+- ✨ **New**: `closeOnBackgroundClick` configuration option
+- 🐛 **Fixed**: Smart click detection between media and background
+
+#### v1.1.0
+- ✨ Progressive zoom levels (1x → 1.5x → 2x → 3x → 100%)
+- 🐛 Fixed drag dezooming issue
+- 🐛 Fixed auto-hide toggle not working
+- 🐛 Fixed vertical image boundary calculations
 
 ## 🤝 Contributing
 
@@ -268,27 +312,43 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👨‍💻 Author
 
-**Faruk Ahmed**  
-[FrontTheme](https://fronttheme.com)
+**Faruk Ahmed**
+- Website: [FrontTheme](https://fronttheme.com)
+- Portfolio: [farukdesign.com](https://www.farukdesign.com/)
+- GitHub: [@fronttheme](https://github.com/fronttheme)
 
 ## 🙏 Acknowledgments
 
 - Inspired by modern lightbox libraries
 - Built with love for the web community
+- Thanks to all [contributors](https://github.com/fronttheme/zoomora/graphs/contributors)!
+
+## 💬 Community & Support
+
+- 🐛 [Report a bug](https://github.com/fronttheme/zoomora/issues)
+- 💡 [Request a feature](https://github.com/fronttheme/zoomora/issues)
+- 📖 [Read the docs](https://github.com/fronttheme/zoomora)
+- ⭐ [Star on GitHub](https://github.com/fronttheme/zoomora)
 
 ## 🔗 Resources
 
 - 🟢 [Live Demo](https://fronttheme.github.io/zoomora/)
-- 🐛 [Report a bug](https://github.com/fronttheme/zoomora/issues)
-- 💡 [Request a feature](https://github.com/fronttheme/zoomora/issues)
-- 📖 [Documentation](https://github.com/fronttheme/zoomora)
+- 📦 [NPM Package](https://www.npmjs.com/package/zoomora)
+- 📚 [Documentation](https://github.com/fronttheme/zoomora)
+- 💬 [Discussions](https://github.com/fronttheme/zoomora/discussions)
 
 ---
 
+<div align="center">
+
 Made with ❤️ by [FrontTheme](https://fronttheme.com)
+
+**[⬆ back to top](#zoomora-lightbox)**
+
+</div>

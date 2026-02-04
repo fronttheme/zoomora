@@ -22,10 +22,10 @@ var __spreadValues = (a, b) => {
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 
   /*!
-   * Zoomora Lightbox Plugin v1.1.0
+   * Zoomora Lightbox Plugin v1.2.0
    * A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
    *
-   * Copyright (c) 2025 Faruk Ahmed (FrontTheme)
+   * Copyright (c) 2026 Faruk Ahmed (FrontTheme)
    * Licensed under MIT License
    */
   (function(global, factory) {
@@ -59,6 +59,8 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
           // Zoom step for scroll wheel
           animationDuration: 300,
           // Animation duration in ms
+          closeOnBackgroundClick: true,
+          // Close lightbox when clicking on background
           onOpen: null,
           // Callback when lightbox opens
           onClose: null,
@@ -313,10 +315,14 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
        * Handle fullscreen change events
        */
       handleFullscreenChange() {
-        const isInFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+        const isInFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
         if (!isInFullscreen && this.isFullscreen) {
           this.isFullscreen = false;
           this.zoomora.classList.remove("fullscreen");
+          this.updateButtons();
+        } else if (isInFullscreen && !this.isFullscreen) {
+          this.isFullscreen = true;
+          this.zoomora.classList.add("fullscreen");
           this.updateButtons();
         }
       }
@@ -325,7 +331,7 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
        * @param {Event} e - Click event
        */
       handleZoomoraClick(e) {
-        if (e.target === this.zoomora) {
+        if (e.target === this.zoomora && this.options.closeOnBackgroundClick) {
           this.close();
         }
       }
@@ -337,9 +343,37 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
         if (Date.now() - this.lastDragTime < 200) {
           return;
         }
-        const media = e.target.closest(".zoomora-media");
-        if (media && !media.classList.contains("no-zoom")) {
-          this.toggleZoom();
+        if (this.header && this.header.contains(e.target)) {
+          return;
+        }
+        if (e.target.closest("button")) {
+          return;
+        }
+        const mediaElement = e.target.closest(".zoomora-media, .zoomora-video, .zoomora-iframe");
+        if (mediaElement) {
+          if (mediaElement.classList.contains("zoomora-media") && !mediaElement.classList.contains("no-zoom")) {
+            this.toggleZoom();
+          }
+          return;
+        }
+        const videoContainer = e.target.closest(".zoomora-video-container");
+        if (videoContainer) {
+          if (e.target.closest(".zoomora-play-button")) {
+            return;
+          }
+          if (this.options.closeOnBackgroundClick) {
+            this.close();
+          }
+          return;
+        }
+        const clickedElement = e.target;
+        const isBackgroundElement = clickedElement.classList.contains("zoomora-content") || clickedElement.classList.contains("zoomora-slide-container") || clickedElement.classList.contains("zoomora-slide") || clickedElement.classList.contains("zoomora-slides-container") || clickedElement.id === "zoomoraContent" || clickedElement.id === "zoomoraSlidesContainer";
+        if (isBackgroundElement && this.options.closeOnBackgroundClick) {
+          this.close();
+          return;
+        }
+        if (this.options.closeOnBackgroundClick) {
+          this.close();
         }
       }
       /**
@@ -810,11 +844,6 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
        * @param {HTMLImageElement} img - Image element
        * @returns {Object} Zoom configuration
        */
-      /**
-       * Calculate zoom levels for an image
-       * @param {HTMLImageElement} img - Image element
-       * @returns {Object} Zoom configuration
-       */
       calculateZoomLevels(img) {
         if (!img || !img.naturalWidth || !img.naturalHeight) {
           return { canZoom: false, levels: [], currentLevel: 0 };
@@ -950,7 +979,6 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
         if (!media || media.tagName !== "IMG") return;
         const zoomConfig = this.calculateZoomLevels(media);
         if (!zoomConfig.canZoom) {
-          console.log("Image cannot be zoomed (already at full size or larger)");
           return;
         }
         if (!media.dataset.zoomLevel) {
@@ -981,7 +1009,6 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
           media.style.transform = `translate(0px, 0px) scale(${targetScale})`;
           media.style.cursor = "grab";
           media.classList.add("zoomed");
-          console.log(`Zoomed to level ${currentLevel}/${zoomConfig.levels.length - 1} (${(targetScale * 100).toFixed(0)}%)`);
         }
       }
       /**
@@ -1013,17 +1040,37 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
        */
       enterFullscreen() {
         const element = this.zoomora;
-        const requestFullscreen = element.requestFullscreen || element.webkitRequestFullscreen || element.mozRequestFullScreen || element.msRequestFullscreen;
-        if (requestFullscreen) {
-          requestFullscreen.call(element).then(() => {
+        try {
+          if (element.requestFullscreen) {
+            element.requestFullscreen().then(() => {
+              this.isFullscreen = true;
+              this.zoomora.classList.add("fullscreen");
+              this.updateButtons();
+            }).catch((err) => {
+              console.warn("Zoomora: Fullscreen request failed:", err.message);
+              this.fallbackFullscreen();
+            });
+          } else if (element.webkitRequestFullscreen) {
+            element.webkitRequestFullscreen();
             this.isFullscreen = true;
             this.zoomora.classList.add("fullscreen");
             this.updateButtons();
-          }).catch((err) => {
-            console.warn("Zoomora: Could not enter fullscreen:", err);
+          } else if (element.mozRequestFullScreen) {
+            element.mozRequestFullScreen();
+            this.isFullscreen = true;
+            this.zoomora.classList.add("fullscreen");
+            this.updateButtons();
+          } else if (element.msRequestFullscreen) {
+            element.msRequestFullscreen();
+            this.isFullscreen = true;
+            this.zoomora.classList.add("fullscreen");
+            this.updateButtons();
+          } else {
+            console.warn("Zoomora: Fullscreen API not supported, using CSS fallback");
             this.fallbackFullscreen();
-          });
-        } else {
+          }
+        } catch (error) {
+          console.error("Zoomora: Error entering fullscreen:", error);
           this.fallbackFullscreen();
         }
       }
@@ -1031,22 +1078,41 @@ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
        * Exit fullscreen mode
        */
       exitFullscreen() {
-        const isInFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
-        if (isInFullscreen) {
-          const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
-          if (exitFullscreen) {
-            exitFullscreen.call(document).then(() => {
+        const isInFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        if (!isInFullscreen) {
+          this.fallbackExitFullscreen();
+          return;
+        }
+        try {
+          if (document.exitFullscreen) {
+            document.exitFullscreen().then(() => {
               this.isFullscreen = false;
               this.zoomora.classList.remove("fullscreen");
               this.updateButtons();
             }).catch((err) => {
-              console.warn("Zoomora: Could not exit fullscreen:", err);
+              console.warn("Zoomora: Exit fullscreen failed:", err.message);
               this.fallbackExitFullscreen();
             });
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+            this.isFullscreen = false;
+            this.zoomora.classList.remove("fullscreen");
+            this.updateButtons();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+            this.isFullscreen = false;
+            this.zoomora.classList.remove("fullscreen");
+            this.updateButtons();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+            this.isFullscreen = false;
+            this.zoomora.classList.remove("fullscreen");
+            this.updateButtons();
           } else {
             this.fallbackExitFullscreen();
           }
-        } else {
+        } catch (error) {
+          console.error("Zoomora: Error exiting fullscreen:", error);
           this.fallbackExitFullscreen();
         }
       }

@@ -5,6 +5,24 @@ All notable changes to Zoomora will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-02-04
+
+### Added
+- **Background click to close**: Clicking on the dark background area (outside media content) now closes the lightbox (#4)
+- New configuration option `closeOnBackgroundClick` (default: `true`) to control this behavior
+- Smart click detection that distinguishes between media content, controls, and background clicks
+
+### Changed
+- Enhanced `handleContentClick()` method to support background click detection
+- Improved click handling logic to prevent accidental closes during image zoom or drag operations
+
+### Fixed
+- Click handling now properly respects drag operations (won't trigger close if recently dragging)
+- Video and iframe clicks no longer interfere with zoom or close functionality
+
+### Thanks
+- Special thanks to [@dragoeco] for suggesting this feature and providing a working CodePen example!
+
 ## [1.1.0] - 2025-11-30
 
 ### Added
