@@ -1,5 +1,5 @@
 /*!
- * Zoomora Lightbox Plugin v1.2.0
+ * Zoomora Lightbox Plugin v1.2.1
  * A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
  *
  * Copyright (c) 2026 Faruk Ahmed (FrontTheme)
@@ -161,21 +161,27 @@ import './styles/zoomora.scss';
         <div class="zoomora" id="zoomoraLightbox">
           <div class="zoomora-container">
             <div class="zoomora-header" id="zoomoraHeader">
-              <div class="zoomora-counter" id="zoomoraCounter">1 / 1</div>
+              <div class="zoomora-counter" id="zoomoraCounter" ${!this.options.showCounter ? 'style="opacity:0;visibility:hidden;"' : ''}>1 / 1</div>
               <div class="zoomora-controls">
-                <button class="zoomora-btn" id="zoomoraThumbnailBtn" title="Toggle Thumbnails">
-                  <i class="zoomorai-thumbnails"></i>
-                </button>
+                ${this.options.showThumbnails ? `
+                  <button class="zoomora-btn" id="zoomoraThumbnailBtn" title="Toggle Thumbnails">
+                    <i class="zoomorai-thumbnails"></i>
+                  </button>
+                ` : ''}
                 ${autoHideButtonHTML}
-                <button class="zoomora-btn" id="zoomoraZoomBtn" title="Zoom">
-                  <i class="zoomorai-zoom"></i>
-                </button>
-                <button class="zoomora-btn" id="zoomoraFullscreenBtn" title="Fullscreen">
-                  <i class="zoomorai-expand"></i>
-                </button>
-                <button class="zoomora-btn" id="zoomoraCollapseBtn" title="Exit Fullscreen" style="display: none;">
-                  <i class="zoomorai-collapse"></i>
-                </button>
+                ${this.options.showZoom ? `
+                  <button class="zoomora-btn" id="zoomoraZoomBtn" title="Zoom">
+                    <i class="zoomorai-zoom"></i>
+                  </button>
+                ` : ''}
+                ${this.options.showFullscreen ? `
+                  <button class="zoomora-btn" id="zoomoraFullscreenBtn" title="Fullscreen">
+                    <i class="zoomorai-expand"></i>
+                  </button>
+                  <button class="zoomora-btn" id="zoomoraCollapseBtn" title="Exit Fullscreen" style="display: none;">
+                    <i class="zoomorai-collapse"></i>
+                  </button>
+                ` : ''}
                 <button class="zoomora-btn" id="zoomoraCloseBtn" title="Close">
                   <i class="zoomorai-close"></i>
                 </button>
@@ -194,8 +200,8 @@ import './styles/zoomora.scss';
               <i class="zoomorai-arrow-right"></i>
             </button>
     
-            <div class="zoomora-caption" id="zoomoraCaption"></div>
-            <div class="zoomora-thumbnails" id="zoomoraThumbs"></div>
+            <div class="zoomora-caption" id="zoomoraCaption" ${!this.options.showThumbnails ? 'style="bottom:20px;"' : ''}></div>
+            <div class="zoomora-thumbnails" id="zoomoraThumbs" ${!this.options.showThumbnails ? 'style="display:none;"' : ''}></div>
           </div>
         </div>
       `;
@@ -231,10 +237,16 @@ import './styles/zoomora.scss';
       this.addEventListener(document.getElementById('zoomoraCloseBtn'), 'click', () => this.close());
       this.addEventListener(document.getElementById('zoomoraPrevBtn'), 'click', () => this.prev());
       this.addEventListener(document.getElementById('zoomoraNextBtn'), 'click', () => this.next());
-      this.addEventListener(document.getElementById('zoomoraZoomBtn'), 'click', () => this.toggleZoom());
-      this.addEventListener(document.getElementById('zoomoraFullscreenBtn'), 'click', () => this.toggleFullscreen());
-      this.addEventListener(document.getElementById('zoomoraCollapseBtn'), 'click', () => this.exitFullscreen());
-      this.addEventListener(document.getElementById('zoomoraThumbnailBtn'), 'click', () => this.toggleThumbnails());
+      if (this.options.showZoom) {
+        this.addEventListener(document.getElementById('zoomoraZoomBtn'), 'click', () => this.toggleZoom());
+      }
+      if (this.options.showFullscreen) {
+        this.addEventListener(document.getElementById('zoomoraFullscreenBtn'), 'click', () => this.toggleFullscreen());
+        this.addEventListener(document.getElementById('zoomoraCollapseBtn'), 'click', () => this.exitFullscreen());
+      }
+      if (this.options.showThumbnails) {
+        this.addEventListener(document.getElementById('zoomoraThumbnailBtn'), 'click', () => this.toggleThumbnails());
+      }
 
       // Fullscreen change events
       this.addEventListener(document, 'fullscreenchange', this.boundMethods.handleFullscreenChange);

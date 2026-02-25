@@ -1,29 +1,27 @@
 /*!
- * Zoomora Lightbox Plugin v1.0.0
+ * Zoomora Lightbox Plugin v1.2.1
  * A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
  *
- * Copyright (c) 2025 Faruk Ahmed (FrontTheme)
+ * Copyright (c) 2026 Faruk Ahmed (FrontTheme)
  * Licensed under MIT License
  */
 
 @use 'variables' as *;
 
+// Font icons
 @font-face {
-  font-family: 'Zoomora';
-  src: url('fonts/Zoomora.eot?y5poek');
-  src: url('fonts/Zoomora.eot?y5poek#iefix') format('embedded-opentype'),
-  url('fonts/Zoomora.ttf?y5poek') format('truetype'),
-  url('fonts/Zoomora.woff?y5poek') format('woff'),
-  url('fonts/Zoomora.svg?y5poek#Zoomora') format('svg');
+  font-family: "Zoomora";
+  src: url("fonts/Zoomora.woff2") format("woff2"),
+  url("fonts/Zoomora.ttf") format("truetype"),
+  url("fonts/Zoomora.woff") format("woff");
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 
-i[class^="zoomorai-"] {
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'Zoomora' !important;
-  speak: never;
+.zoomorai, [class^="zoomorai-"], [class*=" zoomorai-"] {
+  /* Use !important to prevent extensions from overriding this font. */
+  font-family: "Zoomora" !important;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -71,6 +69,7 @@ i[class^="zoomorai-"] {
   content: "\e908";
 }
 
+//Zoomora Lightbox Styles
 .zoomora {
   position: fixed;
   top: 0;
@@ -330,7 +329,6 @@ iframe.zoomora-video {
   width: 80px;
   pointer-events: none;
 }
-
 
 .zoomora-thumb img {
   width: 100%;
