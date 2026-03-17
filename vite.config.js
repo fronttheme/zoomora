@@ -6,7 +6,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
     cssCodeSplit: false,
-    cssMinify: true, // Enable CSS minification
+    cssMinify: true,
     lib: {
       entry: resolve(__dirname, 'src/zoomora.js'),
       name: 'Zoomora',
@@ -40,9 +40,9 @@ export default defineConfig({
               comments: /^!/ // Keep license comments
             },
             compress: {
-              drop_console: true, // ✅ Remove console.log
-              drop_debugger: true, // ✅ Remove debugger statements
-              pure_funcs: ['console.log', 'console.info', 'console.debug'] // ✅ Remove specific console methods
+              drop_console: true,
+              drop_debugger: true,
+              pure_funcs: ['console.log', 'console.info', 'console.debug']
             }
           })]
         },
@@ -62,9 +62,9 @@ export default defineConfig({
               comments: /^!/ // Keep license comments
             },
             compress: {
-              drop_console: true, // ✅ Remove console.log
-              drop_debugger: true, // ✅ Remove debugger statements
-              pure_funcs: ['console.log', 'console.info', 'console.debug'] // ✅ Remove specific console methods
+              drop_console: true,
+              drop_debugger: true,
+              pure_funcs: ['console.log', 'console.info', 'console.debug']
             }
           })]
         }
@@ -79,7 +79,6 @@ export default defineConfig({
       scss: {}
     }
   },
-  // Development server config
   server: {
     port: 3000,
     open: true
