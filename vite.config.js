@@ -17,10 +17,9 @@ export default defineConfig({
           return 'zoomora.es.js'
         }
         return `zoomora.${format}.js`
-      },
-      formats: ['umd', 'es']
+      }
     },
-    rollupOptions: {
+    rolldownOptions: {
       output: [
         // UMD build for WordPress/browser
         {
@@ -35,6 +34,7 @@ export default defineConfig({
           name: 'Zoomora',
           dir: 'dist',
           entryFileNames: 'zoomora.umd.min.js',
+          sourcemap: false,
           plugins: [terser({
             format: {
               comments: /^!/ // Keep license comments
@@ -57,6 +57,7 @@ export default defineConfig({
           format: 'es',
           dir: 'dist',
           entryFileNames: 'zoomora.es.min.js',
+          sourcemap: false,
           plugins: [terser({
             format: {
               comments: /^!/ // Keep license comments

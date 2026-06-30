@@ -1,6 +1,6 @@
 # Zoomora Lightbox
 
-![Zoomora Lightbox Banner](assets/zoomora-lightbox-banner.jpg)
+![Zoomora Lightbox Banner](assets/zoomora-lightbox-banner-v1.3.0.png)
 
 <div align="center">
 
@@ -23,13 +23,14 @@ A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
 - 🎥 **Video Support** - YouTube embeds and local video files (MP4, WebM, OGG)
 - 🔍 **Smart Zoom** - Automatically detects if images are zoomable
 - 🖱️ **Pan & Drag** - Navigate zoomed images with mouse/touch
+- 🖱️ **Scroll-Wheel Zoom** - Mouse wheel and trackpad pinch zoom
 - 📱 **Fully Responsive** - Works seamlessly on all devices
 - ⌨️ **Keyboard Navigation** - Arrow keys, Escape, and shortcut keys
 - 🎬 **Smooth Animations** - Fade and slide transition effects
 - 🖼️ **Thumbnail Strip** - Quick navigation between gallery items
 - 🎯 **Auto-Hide Controls** - Distraction-free viewing mode
 - 🌓 **Fullscreen Mode** - Immersive viewing experience
-- 🎨 **Customizable** - Extensive options and callbacks
+- 🎨 **Customizable** - Extensive options, CSS custom properties, and callbacks
 - ♿ **Accessible** - Keyboard and screen reader friendly
 - 🚀 **Lightweight** - No dependencies required (~15KB gzipped)
 - 🔧 **Easy Integration** - Works with vanilla JS, React, Vue, etc.
@@ -185,6 +186,29 @@ const lightbox = Zoomora.bind('a[data-lightbox]', {
 </a>
 ```
 
+### Opening Images Programmatically (v1.3.0+)
+
+No DOM element required — open any image or set of images directly via JavaScript:
+
+```javascript
+const lightbox = new Zoomora();
+
+// Single image
+lightbox.openImage('photo.jpg');
+
+// With caption and alt text
+lightbox.openImage({ src: 'photo.jpg', caption: 'Beautiful sunset', alt: 'Sunset photo' });
+
+// Synthetic gallery — opens at the second item
+lightbox.openImage(['a.jpg', 'b.jpg', 'c.jpg'], { startIndex: 1 });
+
+// Mixed gallery with video
+lightbox.openImage([
+  { src: 'photo.jpg', caption: 'A photo' },
+  { src: 'https://youtu.be/VIDEO_ID', type: 'video', thumb: 'poster.jpg', caption: 'A video' },
+]);
+```
+
 ## ⚙️ Configuration Options
 
 | Option | Type | Default | Description |
@@ -193,11 +217,11 @@ const lightbox = Zoomora.bind('a[data-lightbox]', {
 | `showCounter` | Boolean | `true` | Show image counter (1 / 5) |
 | `showThumbnails` | Boolean | `true` | Show thumbnail navigation |
 | `showFullscreen` | Boolean | `true` | Show fullscreen button |
-| `showZoom` | Boolean | `true` | Show zoom button |
+| `showZoom` | Boolean | `true` | Show zoom button and enable scroll-wheel zoom |
 | `transition` | String | `'fade'` | Transition effect: 'fade' or 'slide' |
 | `useHref` | Boolean | `false` | Use href instead of data-src |
-| `maxZoomScale` | Number | `3` | Maximum zoom scale |
-| `zoomStep` | Number | `0.1` | Zoom step for scroll wheel |
+| `maxZoomScale` | Number | `3` | Maximum zoom scale for both click-to-cycle and scroll-wheel zoom. Set to `1` to disable zoom entirely |
+| `zoomStep` | Number | `0.1` | Scale increment per mouse-wheel tick (as a fraction of `maxZoomScale`) |
 | `animationDuration` | Number | `300` | Animation duration in milliseconds |
 | `closeOnBackgroundClick` | Boolean | `true` | Close lightbox on background click (v1.2.0+) |
 | `showAutoHideToggle` | Boolean | `true` | Show auto-hide toggle button |
@@ -230,41 +254,55 @@ lightbox.prev();           // Go to previous item
 lightbox.goTo(2);          // Go to specific index
 
 // Controls
-lightbox.open(element);    // Open lightbox with element
+lightbox.open(element);    // Open lightbox with a DOM element
 lightbox.close();          // Close lightbox
 lightbox.toggleZoom();     // Toggle zoom
 lightbox.toggleFullscreen(); // Toggle fullscreen
 lightbox.toggleThumbnails(); // Toggle thumbnails
 lightbox.toggleAutoHide(); // Toggle auto-hide controls
 
+// Programmatic (v1.3.0+)
+lightbox.openImage('photo.jpg');                           // Open single image by URL
+lightbox.openImage(['a.jpg', 'b.jpg'], { startIndex: 1 }); // Open synthetic gallery
+lightbox.openImage({ src, thumb, type, caption, alt });    // Open with full config
+lightbox.createVirtualItem({ src, thumb, type, caption, alt }); // Create virtual item manually
+
 // State
-lightbox.isOpen();         // Check if open
+lightbox.isOpen();          // Check if open
 lightbox.getCurrentIndex(); // Get current index
-lightbox.getTotalItems();  // Get total items
+lightbox.getTotalItems();   // Get total items
 
 // Management
-lightbox.refresh();        // Refresh gallery items
-lightbox.updateOptions({   // Update options
+lightbox.refresh();         // Refresh gallery items
+lightbox.updateOptions({    // Update options
   transition: 'slide'
 });
-lightbox.destroy();        // Clean up and remove
+lightbox.destroy();         // Clean up and remove
 ```
 
 ## 🎨 Styling
 
-Zoomora includes beautiful default styles, but you can customize them:
+Zoomora exposes four CSS custom properties so you can restyle it with plain CSS — no Sass recompilation needed:
 
 ```css
-/* Override CSS variables */
 :root {
-  --zoomora-overlay-bg: rgba(0, 0, 0, 0.95);
-  --zoomora-control-bg: rgba(255, 255, 255, 0.1);
-  --zoomora-control-hover: rgba(255, 255, 255, 0.2);
+  --zoomora-overlay-bg:    rgba(0, 0, 0, 0.92);     /* lightbox backdrop */
+  --zoomora-control-bg:    rgba(255, 255, 255, 0.15); /* button/nav background */
+  --zoomora-control-hover: rgba(255, 255, 255, 0.25); /* button/nav hover */
+  --zoomora-primary:       #ff6b6b;                   /* accent / active state colour */
+}
+```
+
+For deeper customisation (fonts, thumbnail sizes, border radii) override the component classes directly:
+
+```css
+.zoomora-caption {
+  font-family: 'Your Font', sans-serif;
+  border-radius: 4px;
 }
 
-/* Custom styles */
-.zoomora {
-  /* Your custom styles */
+.zoomora-thumb.active {
+  border-color: #ff6b6b;
 }
 ```
 
@@ -291,16 +329,21 @@ See [CHANGELOG.md](CHANGELOG.md) for a detailed list of changes.
 
 ### Recent Updates
 
-#### v1.2.0 (Latest)
+#### v1.3.0 (Latest)
+- ✨ **New**: `openImage()` API — open the lightbox programmatically without DOM elements ([#7](https://github.com/fronttheme/zoomora/issues/7))
+- ✨ **New**: Scroll-wheel and trackpad-pinch zoom
+- ✨ **New**: CSS custom properties for runtime theming (`--zoomora-overlay-bg`, `--zoomora-control-bg`, `--zoomora-control-hover`, `--zoomora-primary`)
+- 🐛 **Fixed**: `maxZoomScale` option now actually controls the zoom ceiling
+- 🐛 **Fixed**: `zoomStep` option now drives the scroll-wheel zoom increment
+- 🔧 **Updated**: Vite 8, Sass 1.101
+
+#### v1.2.1
+- 🐛 **Fixed**: `showZoom`, `showFullscreen`, `showCounter`, `showThumbnails` options not hiding their respective elements
+
+#### v1.2.0
 - ✨ **New**: Background click to close lightbox
 - ✨ **New**: `closeOnBackgroundClick` configuration option
 - 🐛 **Fixed**: Smart click detection between media and background
-
-#### v1.1.0
-- ✨ Progressive zoom levels (1x → 1.5x → 2x → 3x → 100%)
-- 🐛 Fixed drag dezooming issue
-- 🐛 Fixed auto-hide toggle not working
-- 🐛 Fixed vertical image boundary calculations
 
 ## 🤝 Contributing
 

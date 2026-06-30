@@ -1,5 +1,5 @@
 /*!
- * Zoomora Lightbox Plugin v1.2.1
+ * Zoomora Lightbox Plugin v1.3.0
  * A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
  *
  * Copyright (c) 2026 Faruk Ahmed (FrontTheme)
@@ -84,11 +84,8 @@ import './styles/zoomora.scss';
       this.autoHideTimeout = null;
       this.autoHideDelay = 3000;
       this.isControlsVisible = true;
-      this.idleTimer = null;
 
       this.lastDragTime = 0;
-
-      // Bound methods for event listeners
       this.boundMethods = {
         handleDocumentClick: this.handleDocumentClick.bind(this),
         handleKeydown: this.handleKeydown.bind(this),
@@ -101,6 +98,7 @@ import './styles/zoomora.scss';
         handleTouchStart: this.handleTouchStart.bind(this),
         handleTouchMove: this.handleTouchMove.bind(this),
         handleTouchEnd: this.handleTouchEnd.bind(this),
+        handleWheel: this.handleWheel.bind(this),
       };
 
       this.init();
@@ -274,6 +272,11 @@ import './styles/zoomora.scss';
       this.addEventListener(this.content, 'touchmove', this.boundMethods.handleTouchMove, {passive: false});
       this.addEventListener(this.content, 'touchend', this.boundMethods.handleTouchEnd);
 
+      // Scroll-wheel zoom
+      if (this.options.showZoom) {
+        this.addEventListener(this.content, 'wheel', this.boundMethods.handleWheel, {passive: false});
+      }
+
       // Add auto-hide toggle button handler (only if enabled)
       if (this.options.showAutoHideToggle) {
         this.addEventListener(document.getElementById('zoomoraAutoHideBtn'), 'click', () => this.toggleAutoHide());
@@ -287,7 +290,7 @@ import './styles/zoomora.scss';
 
     /**
      * Add event listener with cleanup tracking
-     * @param {Element} element - DOM element
+     * @param {EventTarget} element - DOM element or document
      * @param {string} event - Event type
      * @param {Function} handler - Event handler
      * @param {Object} options - Event options
@@ -502,6 +505,54 @@ import './styles/zoomora.scss';
     }
 
     /**
+     * Handle scroll-wheel zoom
+     * @param {WheelEvent} e - Wheel event
+     */
+    handleWheel(e) {
+      const media = this.content.querySelector('.zoomora-media');
+      if (!media || media.tagName !== 'IMG') return;
+
+      const zoomConfig = this.calculateZoomLevels(media);
+      if (!zoomConfig.canZoom) return;
+
+      e.preventDefault();
+
+      const maxScale = zoomConfig.levels[zoomConfig.levels.length - 1];
+      const step = this.options.zoomStep || 0.1;
+      const direction = e.deltaY < 0 ? 1 : -1; // scroll/pinch up = zoom in
+
+      let newScale = (this.currentScale || 1) + (direction * step * maxScale);
+      newScale = Math.max(1, Math.min(maxScale, newScale));
+
+      if (newScale === this.currentScale) return;
+
+      this.currentScale = newScale;
+      this.isZoomed = newScale > 1;
+      this.currentX = 0;
+      this.currentY = 0;
+
+      if (this.isZoomed) {
+        media.style.transform = `scale(${newScale})`;
+        media.style.cursor = 'grab';
+        media.classList.add('zoomed');
+      } else {
+        media.style.transform = '';
+        media.style.cursor = 'pointer';
+        media.classList.remove('zoomed');
+      }
+
+      // Keep the click-to-cycle zoom index roughly in sync with the
+      // continuous wheel scale, so a click after scrolling cycles sensibly.
+      let nearestIndex = 0;
+      zoomConfig.levels.forEach((level, index) => {
+        if (Math.abs(level - newScale) < Math.abs(zoomConfig.levels[nearestIndex] - newScale)) {
+          nearestIndex = index;
+        }
+      });
+      media.dataset.zoomLevel = nearestIndex.toString();
+    }
+
+    /**
      * Get image source from element
      * @param {Element} item - DOM element
      * @returns {string} - Image source URL
@@ -635,6 +686,79 @@ import './styles/zoomora.scss';
       this.items = Array.from(document.querySelectorAll(groupSelector));
       this.currentIndex = Math.max(0, this.items.indexOf(element));
 
+      this._activateLightbox();
+
+      // Trigger callback
+      if (typeof this.options.onOpen === 'function') {
+        this.options.onOpen(element, this.currentIndex);
+      }
+    }
+
+    /**
+     * Open lightbox programmatically with image(s) not present in the DOM.
+     * Accepts a single URL, an array of URLs, a config object, or an array
+     * of config objects — so all of these work:
+     *
+     *   lightbox.openImage('photo.jpg');
+     *   lightbox.openImage(['a.jpg', 'b.jpg'], { startIndex: 1 });
+     *   lightbox.openImage({ src: 'photo.jpg', caption: 'Hello' });
+     *   lightbox.openImage([
+     *     { src: 'a.jpg', caption: 'First' },
+     *     { src: 'https://youtu.be/xyz', type: 'video', thumb: 'poster.jpg' },
+     *   ]);
+     *
+     * @param {string|string[]|Object|Object[]} images - URL(s) or config object(s)
+     * @param {Object} [opts] - Options
+     * @param {number} [opts.startIndex=0] - Index to open at when passing an array
+     */
+    openImage(images, opts = {}) {
+      const list = Array.isArray(images) ? images : [images];
+
+      this.items = list.map(entry =>
+        this.createVirtualItem(typeof entry === 'string' ? {src: entry} : entry)
+      );
+
+      this.currentIndex = Math.max(
+        0,
+        Math.min(opts.startIndex || 0, this.items.length - 1)
+      );
+
+      this._activateLightbox();
+
+      // Trigger callback
+      if (typeof this.options.onOpen === 'function') {
+        this.options.onOpen(this.items[this.currentIndex], this.currentIndex);
+      }
+    }
+
+    /**
+     * Create a virtual item that mimics a DOM element's interface so
+     * programmatic images work through the existing render pipeline without
+     * any changes to getImageSource, getThumbnailSource, updateCaption, etc.
+     * @param {Object} config
+     * @param {string} config.src - Full-size image/video/iframe URL
+     * @param {string} [config.thumb] - Thumbnail URL (falls back to src)
+     * @param {string} [config.type='image'] - 'image', 'video', or 'iframe'
+     * @param {string} [config.caption=''] - Caption text
+     * @param {string} [config.alt=''] - Alt text for the thumbnail img
+     * @returns {Object} Virtual item
+     */
+    createVirtualItem({src, thumb, type = 'image', caption = '', alt = ''}) {
+      const thumbSrc = thumb || src;
+      return {
+        dataset: {src, type, caption},
+        src: thumbSrc,
+        alt,
+        title: caption,
+        getAttribute: (name) => name === 'src' ? thumbSrc : null,
+      };
+    }
+
+    /**
+     * Shared activation sequence used by both open() and openImage().
+     * Resets state, shows the lightbox, and triggers all UI updates.
+     */
+    _activateLightbox() {
       // Reset states
       this.isZoomed = false;
       this.isFullscreen = false;
@@ -653,16 +777,11 @@ import './styles/zoomora.scss';
       this.updateCaption();
       this.updateButtons();
 
-      // Initialize auto-hide if enabled
+      // Initialize auto-hide
       if (this.autoHideEnabled) {
         this.startAutoHideTimer();
       } else {
         this.showControls();
-      }
-
-      // Trigger callback
-      if (typeof this.options.onOpen === 'function') {
-        this.options.onOpen(element, this.currentIndex);
       }
     }
 
@@ -1029,11 +1148,11 @@ import './styles/zoomora.scss';
       const maxZoomRatio = Math.max(zoomRatioX, zoomRatioY);
 
       // Store zoom info
-      img.dataset.zoomRatio = maxZoomRatio;
-      img.dataset.naturalWidth = naturalWidth;
-      img.dataset.naturalHeight = naturalHeight;
-      img.dataset.renderedWidth = renderedWidth;
-      img.dataset.renderedHeight = renderedHeight;
+      img.dataset.zoomRatio = maxZoomRatio.toString();
+      img.dataset.naturalWidth = naturalWidth.toString();
+      img.dataset.naturalHeight = naturalHeight.toString();
+      img.dataset.renderedWidth = renderedWidth.toString();
+      img.dataset.renderedHeight = renderedHeight.toString();
 
       // Enable zoom if significantly scaled down
       if (isScaledDown && maxZoomRatio > 1.1) {
@@ -1071,16 +1190,24 @@ import './styles/zoomora.scss';
         return {canZoom: false, levels: [], currentLevel: 0};
       }
 
+      // Respect the configured ceiling (falls back to 3x only if misconfigured)
+      const configuredMax = Number(this.options.maxZoomScale);
+      const maxZoom = Number.isFinite(configuredMax) && configuredMax > 0
+        ? Math.max(1, configuredMax)
+        : 3;
+
       // Calculate zoom levels based on FIT scale (not current scale)
       const levels = [1]; // Start with fit-to-screen
 
-      // Add progressive levels: 1.5x, 2x, 3x
-      if (fitScale * 1.5 <= 1) levels.push(1.5);
-      if (fitScale * 2 <= 1) levels.push(2);
-      if (fitScale * 3 <= 1) levels.push(3);
+      // Add progressive levels up to the configured max: 1.5x, 2x, 3x, 4x, 5x...
+      [1.5, 2, 3, 4, 5].forEach((candidate) => {
+        if (candidate <= maxZoom && fitScale * candidate <= 1) {
+          levels.push(candidate);
+        }
+      });
 
-      // Add actual size (100%) as final level
-      const actualSizeScale = 1 / fitScale;
+      // Add actual size (100%) as final level, capped at the configured max
+      const actualSizeScale = Math.min(1 / fitScale, maxZoom);
       if (actualSizeScale > levels[levels.length - 1]) {
         levels.push(actualSizeScale);
       }
@@ -1260,23 +1387,6 @@ import './styles/zoomora.scss';
         media.style.transform = `translate(0px, 0px) scale(${targetScale})`;
         media.style.cursor = 'grab';
         media.classList.add('zoomed');
-      }
-    }
-
-    /**
-     * Update image transform based on current state
-     * @param {HTMLElement} media - Media element
-     */
-    updateImageTransform(media) {
-      if (!media) return;
-
-      if (this.currentScale === 1) {
-        media.style.transform = '';
-      } else {
-        // IMPORTANT: translate in scaled space, so divide by scale
-        const translateX = this.currentX / this.currentScale;
-        const translateY = this.currentY / this.currentScale;
-        media.style.transform = `scale(${this.currentScale}) translate(${translateX}px, ${translateY}px)`;
       }
     }
 
@@ -1621,7 +1731,7 @@ import './styles/zoomora.scss';
       this.stopAutoHideTimer();
 
       // Remove all event listeners
-      this.eventListeners.forEach((listeners, key) => {
+      this.eventListeners.forEach((listeners, _key) => {
         listeners.forEach(({element, event, handler, options}) => {
           if (element && element.removeEventListener) {
             element.removeEventListener(event, handler, options);

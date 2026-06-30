@@ -1,5 +1,5 @@
 /*!
- * Zoomora Lightbox Plugin v1.2.1
+ * Zoomora Lightbox Plugin v1.3.0
  * A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
  *
  * Copyright (c) 2026 Faruk Ahmed (FrontTheme)
@@ -69,6 +69,25 @@
   content: "\e908";
 }
 
+// ─── Runtime CSS custom properties ───────────────────────────────────────────
+// Sass variables are compiled away at build time; these :root declarations
+// expose the same values as overridable runtime variables so users can theme
+// Zoomora with plain CSS without recompiling the Sass source.
+//
+//   :root {
+//     --zoomora-overlay-bg:    rgba(0, 0, 0, 0.92);
+//     --zoomora-control-bg:    rgba(255, 255, 255, 0.15);
+//     --zoomora-control-hover: rgba(255, 255, 255, 0.25);
+//     --zoomora-primary:       #ff6b6b;
+//   }
+// ─────────────────────────────────────────────────────────────────────────────
+:root {
+  --zoomora-overlay-bg:    #{rgba($dark-color, 0.95)};
+  --zoomora-control-bg:    rgba(255, 255, 255, 0.2);
+  --zoomora-control-hover: rgba(255, 255, 255, 0.3);
+  --zoomora-primary:       #{$primary-color};
+}
+
 //Zoomora Lightbox Styles
 .zoomora {
   position: fixed;
@@ -76,7 +95,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba($dark-color, 0.95);
+  background: var(--zoomora-overlay-bg);
   backdrop-filter: blur(20px);
   z-index: 10000;
   display: flex;
@@ -141,7 +160,7 @@
   height: 50px;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--zoomora-control-bg);
   color: white;
   cursor: pointer;
   display: flex;
@@ -153,7 +172,7 @@
 }
 
 .zoomora-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--zoomora-control-hover);
   transform: scale(1.1);
 }
 
@@ -251,7 +270,7 @@ iframe.zoomora-video {
 }
 
 .zoomora-nav:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--zoomora-control-hover);
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -550,7 +569,7 @@ iframe.zoomora-video {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-// Auto-hide button icon
+// Auto-hide button active state
 #zoomoraAutoHideBtn.active {
-  color: $primary-color;
+  color: var(--zoomora-primary);
 }
