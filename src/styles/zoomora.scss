@@ -1,5 +1,5 @@
 /*!
- * Zoomora Lightbox Plugin v1.3.0
+ * Zoomora Lightbox Plugin v1.4.0
  * A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
  *
  * Copyright (c) 2026 Faruk Ahmed (FrontTheme)
@@ -82,10 +82,10 @@
 //   }
 // ─────────────────────────────────────────────────────────────────────────────
 :root {
-  --zoomora-overlay-bg:    #{rgba($dark-color, 0.95)};
-  --zoomora-control-bg:    rgba(255, 255, 255, 0.2);
+  --zoomora-overlay-bg: #{rgba($dark-color, 0.95)};
+  --zoomora-control-bg: rgba(255, 255, 255, 0.2);
   --zoomora-control-hover: rgba(255, 255, 255, 0.3);
-  --zoomora-primary:       #{$primary-color};
+  --zoomora-primary: #{$primary-color};
 }
 
 //Zoomora Lightbox Styles
@@ -247,6 +247,18 @@ iframe.zoomora-video {
   overflow: hidden;
 }
 
+@media (max-width: 767px) {
+  iframe.zoomora-video {
+    width: calc(100% - 100px);
+  }
+}
+
+@media (max-width: 575px) {
+  iframe.zoomora-video {
+    width: calc(100% - 40px);
+  }
+}
+
 .zoomora-slide.slide-effect {
   transform: translateX(100%);
 }
@@ -301,6 +313,11 @@ iframe.zoomora-video {
 
 .zoomora-caption.single-item-thumbnail {
   bottom: 20px !important;
+}
+
+.zoomora-caption:empty {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .zoomora-thumbnails {
@@ -425,8 +442,10 @@ iframe.zoomora-video {
 }
 
 .zoomora-video-container video {
+  display: block;
   width: 100%;
   height: 100%;
+  margin: 0 auto;
   object-fit: contain;
   max-width: max-content;
 }

@@ -4,6 +4,10 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
+# Docs
+README/
+RELEASING.md
+
 # Build outputs - REMOVED dist/ and build/
 *.log
 

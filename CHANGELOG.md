@@ -5,6 +5,27 @@ All notable changes to Zoomora will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-11-13
+
+### Added
+- **`autoplayVideos` option** (default `false`) — YouTube embeds get `autoplay=1` and `allow="autoplay"`, and local videos call `play()` when their slide opens, including when reached with Next, Prev or a thumbnail. If the browser blocks autoplay, the play button stays visible
+- **`data-thumbnail` attribute** — sets the image used in the thumbnail strip, for triggers that have no image of their own (e.g. a text link to a video)
+- **Keyboard opening** — Enter or Space on a focused trigger opens the lightbox; image triggers need `tabindex="0"` and `role="button"` to be focusable
+
+### Fixed
+- **Anchor triggers showed blank thumbnails** — `getThumbnailSource()` now also reads the `<img>` inside the trigger, then falls back to `data-src` or `href`
+- **Local videos kept playing after close** — `close()` now pauses any `<video>` and blanks any iframe instead of reloading it
+- **Empty caption box** — an empty caption is now hidden even when auto-hide shows the controls again
+- **Centred local videos** — video elements are centred even when a theme makes them block-level
+- **YouTube frames on small screens** — wider frames below 768px and 576px
+
+### Changed
+- **ES module build** — the source now uses `export default Zoomora` instead of a UMD wrapper; Vite still builds the UMD file, so `window.Zoomora` works as before for `<script>` and CDN users
+- **Thumbnails prefer the trigger's own image** — `src` (usually the small thumbnail) is used before `data-src` (the full image), so the strip loads faster
+- **Build** — `__dirname` replaced with `import.meta.dirname` in `vite.config.js`
+
+---
+
 ## [1.3.0] - 2026-07-01
 
 ### Added
@@ -114,6 +135,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ---
 
 ## Upgrade Guide
+
+### From 1.3.x to 1.4.0
+
+**Breaking Changes:** None for UMD / CDN users.
+
+**Check if you:**
+- **Import the ES build and then use `window.Zoomora`** — the ES build no longer sets a global. Use the imported class:
+  ```js
+  import Zoomora from 'zoomora';
+  const lightbox = new Zoomora();
+  ```
+- **Rely on full-size thumbnails** — thumbnails now use the trigger's own `src` before `data-src`. Add `data-thumbnail` to choose a specific image.
+
+```bash
+npm install zoomora@1.4.0
+```
 
 ### From 1.2.x to 1.3.0
 

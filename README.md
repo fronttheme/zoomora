@@ -4,7 +4,8 @@
 
 <div align="center">
 
-A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features. Perfect for showcasing images and videos in a beautiful, user-friendly interface.
+A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features. Perfect for showcasing images and
+videos in a beautiful, user-friendly interface.
 
 [![View Live Demo](https://img.shields.io/badge/View-Live%20Demo-667eea?style=for-the-badge&logo=github)](https://fronttheme.github.io/zoomora/)
 [![npm version](https://img.shields.io/npm/v/zoomora?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/zoomora)
@@ -13,7 +14,9 @@ A modern, responsive lightbox plugin with zoom, fullscreen, and gallery features
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/zoomora?style=for-the-badge&color=orange&logo=webpack)](https://bundlephobia.com/package/zoomora)
 [![GitHub stars](https://img.shields.io/github/stars/fronttheme/zoomora?style=for-the-badge&logo=github&color=yellow)](https://github.com/fronttheme/zoomora/stargazers)
 
-**[Demo](https://fronttheme.github.io/zoomora/)** • **[Documentation](#-quick-start)** • **[Report Bug](https://github.com/fronttheme/zoomora/issues)** • **[Request Feature](https://github.com/fronttheme/zoomora/issues)**
+**[Demo](https://fronttheme.github.io/zoomora/)** • **[Documentation](#-quick-start)** • *
+*[Report Bug](https://github.com/fronttheme/zoomora/issues)** • *
+*[Request Feature](https://github.com/fronttheme/zoomora/issues)**
 
 </div>
 
@@ -62,9 +65,11 @@ yarn add zoomora
 
 ### Manual Download
 
-Download the latest release from [GitHub Releases](https://github.com/fronttheme/zoomora/releases) and include the files in your project:
+Download the latest release from [GitHub Releases](https://github.com/fronttheme/zoomora/releases) and include the files
+in your project:
 
 ```html
+
 <link rel="stylesheet" href="path/to/zoomora.css">
 <script src="path/to/zoomora.umd.min.js"></script>
 ```
@@ -75,14 +80,14 @@ Download the latest release from [GitHub Releases](https://github.com/fronttheme
 
 ```html
 <!-- Add data-zoomora attribute with a unique group ID -->
-<img src="image-1.jpg" 
-     data-src="image-1.jpg" 
-     data-zoomora="my-gallery" 
+<img src="image-1.jpg"
+     data-src="image-1.jpg"
+     data-zoomora="my-gallery"
      alt="Image 1">
 
-<img src="image-2.jpg" 
-     data-src="image-2.jpg" 
-     data-zoomora="my-gallery" 
+<img src="image-2.jpg"
+     data-src="image-2.jpg"
+     data-zoomora="my-gallery"
      alt="Image 2">
 
 <!-- Initialize (auto-initializes if elements exist) -->
@@ -120,17 +125,18 @@ const lightbox = new Zoomora({
 ### Image Gallery
 
 ```html
+
 <div class="gallery">
-  <img src="thumb-1.jpg" 
-       data-src="full-1.jpg" 
-       data-caption="Beautiful sunset" 
-       data-zoomora="gallery-1" 
+  <img src="thumb-1.jpg"
+       data-src="full-1.jpg"
+       data-caption="Beautiful sunset"
+       data-zoomora="gallery-1"
        alt="Sunset">
-  
-  <img src="thumb-2.jpg" 
-       data-src="full-2.jpg" 
-       data-caption="Mountain view" 
-       data-zoomora="gallery-1" 
+
+  <img src="thumb-2.jpg"
+       data-src="full-2.jpg"
+       data-caption="Mountain view"
+       data-zoomora="gallery-1"
        alt="Mountains">
 </div>
 ```
@@ -138,36 +144,55 @@ const lightbox = new Zoomora({
 ### Video Support
 
 #### Local Video
+
 ```html
-<img src="video-poster.jpg" 
-     data-src="video.mp4" 
-     data-type="video" 
-     data-caption="My video" 
-     data-zoomora="media-gallery" 
+<img src="video-poster.jpg"
+     data-src="video.mp4"
+     data-type="video"
+     data-caption="My video"
+     data-zoomora="media-gallery"
      alt="Video">
 ```
 
 #### YouTube Video
+
 ```html
-<img src="video-thumbnail.jpg" 
-     data-src="https://www.youtube.com/watch?v=VIDEO_ID" 
-     data-type="video" 
-     data-caption="YouTube video" 
-     data-zoomora="media-gallery" 
+<img src="video-thumbnail.jpg"
+     data-src="https://www.youtube.com/watch?v=VIDEO_ID"
+     data-type="video"
+     data-caption="YouTube video"
+     data-zoomora="media-gallery"
      alt="Video">
 ```
 
 YouTube short URLs also work:
+
 ```html
 data-src="https://youtu.be/VIDEO_ID"
 ```
 
+### Custom Thumbnail (v1.4.0+)
+
+Use `data-thumbnail` to set the thumbnail strip image — useful for video triggers that aren't `<img>` elements:
+
+```html
+<a href="https://youtu.be/VIDEO_ID"
+   data-type="video"
+   data-thumbnail="video-poster-small.jpg"
+   data-caption="Product tour"
+   data-zoomora="media-gallery">
+  Watch the tour
+</a>
+```
+
+Thumbnail order: `data-thumbnail`, then the trigger's own image (or the `<img>` inside it), then `data-src` / `href`.
+
 ### Single Image
 
 ```html
-<img src="image.jpg" 
-     data-src="image.jpg" 
-     data-zoomora="single-image" 
+<img src="image.jpg"
+     data-src="image.jpg"
+     data-zoomora="single-image"
      alt="Single image">
 ```
 
@@ -197,51 +222,59 @@ const lightbox = new Zoomora();
 lightbox.openImage('photo.jpg');
 
 // With caption and alt text
-lightbox.openImage({ src: 'photo.jpg', caption: 'Beautiful sunset', alt: 'Sunset photo' });
+lightbox.openImage({src: 'photo.jpg', caption: 'Beautiful sunset', alt: 'Sunset photo'});
 
 // Synthetic gallery — opens at the second item
-lightbox.openImage(['a.jpg', 'b.jpg', 'c.jpg'], { startIndex: 1 });
+lightbox.openImage(['a.jpg', 'b.jpg', 'c.jpg'], {startIndex: 1});
 
 // Mixed gallery with video
 lightbox.openImage([
-  { src: 'photo.jpg', caption: 'A photo' },
-  { src: 'https://youtu.be/VIDEO_ID', type: 'video', thumb: 'poster.jpg', caption: 'A video' },
+  {src: 'photo.jpg', caption: 'A photo'},
+  {src: 'https://youtu.be/VIDEO_ID', type: 'video', thumb: 'poster.jpg', caption: 'A video'},
 ]);
 ```
 
 ## ⚙️ Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `selector` | String | `'[data-zoomora]'` | CSS selector for lightbox triggers |
-| `showCounter` | Boolean | `true` | Show image counter (1 / 5) |
-| `showThumbnails` | Boolean | `true` | Show thumbnail navigation |
-| `showFullscreen` | Boolean | `true` | Show fullscreen button |
-| `showZoom` | Boolean | `true` | Show zoom button and enable scroll-wheel zoom |
-| `transition` | String | `'fade'` | Transition effect: 'fade' or 'slide' |
-| `useHref` | Boolean | `false` | Use href instead of data-src |
-| `maxZoomScale` | Number | `3` | Maximum zoom scale for both click-to-cycle and scroll-wheel zoom. Set to `1` to disable zoom entirely |
-| `zoomStep` | Number | `0.1` | Scale increment per mouse-wheel tick (as a fraction of `maxZoomScale`) |
-| `animationDuration` | Number | `300` | Animation duration in milliseconds |
-| `closeOnBackgroundClick` | Boolean | `true` | Close lightbox on background click (v1.2.0+) |
-| `showAutoHideToggle` | Boolean | `true` | Show auto-hide toggle button |
-| `autoHideDelay` | Number | `3000` | Delay before hiding controls (ms) |
-| `autoHideEnabled` | Boolean | `false` | Enable auto-hide by default |
-| `onOpen` | Function | `null` | Callback when lightbox opens |
-| `onClose` | Function | `null` | Callback when lightbox closes |
-| `onNext` | Function | `null` | Callback when navigating next |
-| `onPrev` | Function | `null` | Callback when navigating previous |
+| Option                   | Type     | Default            | Description                                                                                           |
+|--------------------------|----------|--------------------|-------------------------------------------------------------------------------------------------------|
+| `selector`               | String   | `'[data-zoomora]'` | CSS selector for lightbox triggers                                                                    |
+| `showCounter`            | Boolean  | `true`             | Show image counter (1 / 5)                                                                            |
+| `showThumbnails`         | Boolean  | `true`             | Show thumbnail navigation                                                                             |
+| `showFullscreen`         | Boolean  | `true`             | Show fullscreen button                                                                                |
+| `showZoom`               | Boolean  | `true`             | Show zoom button and enable scroll-wheel zoom                                                         |
+| `transition`             | String   | `'fade'`           | Transition effect: 'fade' or 'slide'                                                                  |
+| `useHref`                | Boolean  | `false`            | Use href instead of data-src                                                                          |
+| `maxZoomScale`           | Number   | `3`                | Maximum zoom scale for both click-to-cycle and scroll-wheel zoom. Set to `1` to disable zoom entirely |
+| `zoomStep`               | Number   | `0.1`              | Scale increment per mouse-wheel tick (as a fraction of `maxZoomScale`)                                |
+| `animationDuration`      | Number   | `300`              | Animation duration in milliseconds                                                                    |
+| `closeOnBackgroundClick` | Boolean  | `true`             | Close lightbox on background click (v1.2.0+)                                                          |
+| `autoplayVideos`         | Boolean  | `false`            | Start YouTube and local videos when their slide opens (v1.4.0+)                                       |
+| `showAutoHideToggle`     | Boolean  | `true`             | Show auto-hide toggle button                                                                          |
+| `autoHideDelay`          | Number   | `3000`             | Delay before hiding controls (ms)                                                                     |
+| `autoHideEnabled`        | Boolean  | `false`            | Enable auto-hide by default                                                                           |
+| `onOpen`                 | Function | `null`             | Callback when lightbox opens                                                                          |
+| `onClose`                | Function | `null`             | Callback when lightbox closes                                                                         |
+| `onNext`                 | Function | `null`             | Callback when navigating next                                                                         |
+| `onPrev`                 | Function | `null`             | Callback when navigating previous                                                                     |
 
 ## 🎮 Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| `←` | Previous image |
-| `→` | Next image |
+| Key   | Action                           |
+|-------|----------------------------------|
+| `←`   | Previous image                   |
+| `→`   | Next image                       |
 | `Esc` | Close lightbox / Exit fullscreen |
-| `Z` | Toggle zoom |
-| `F` | Toggle fullscreen |
-| `T` | Toggle thumbnails |
+| `Z`   | Toggle zoom                      |
+| `F`   | Toggle fullscreen                |
+| `T`   | Toggle thumbnails                |
+
+**Opening with the keyboard (v1.4.0+):** Enter or Space on a focused trigger opens the lightbox. Links and buttons are
+focusable already; image triggers need `tabindex="0"` and `role="button"` to be reachable with Tab:
+
+```html
+<img src="thumb.jpg" data-src="full.jpg" data-zoomora="gallery" alt="Photo" tabindex="0" role="button">
+```
 
 ## 🔧 API Methods
 
@@ -263,9 +296,9 @@ lightbox.toggleAutoHide(); // Toggle auto-hide controls
 
 // Programmatic (v1.3.0+)
 lightbox.openImage('photo.jpg');                           // Open single image by URL
-lightbox.openImage(['a.jpg', 'b.jpg'], { startIndex: 1 }); // Open synthetic gallery
-lightbox.openImage({ src, thumb, type, caption, alt });    // Open with full config
-lightbox.createVirtualItem({ src, thumb, type, caption, alt }); // Create virtual item manually
+lightbox.openImage(['a.jpg', 'b.jpg'], {startIndex: 1}); // Open synthetic gallery
+lightbox.openImage({src, thumb, type, caption, alt});    // Open with full config
+lightbox.createVirtualItem({src, thumb, type, caption, alt}); // Create virtual item manually
 
 // State
 lightbox.isOpen();          // Check if open
@@ -286,10 +319,10 @@ Zoomora exposes four CSS custom properties so you can restyle it with plain CSS 
 
 ```css
 :root {
-  --zoomora-overlay-bg:    rgba(0, 0, 0, 0.92);     /* lightbox backdrop */
-  --zoomora-control-bg:    rgba(255, 255, 255, 0.15); /* button/nav background */
+  --zoomora-overlay-bg: rgba(0, 0, 0, 0.92); /* lightbox backdrop */
+  --zoomora-control-bg: rgba(255, 255, 255, 0.15); /* button/nav background */
   --zoomora-control-hover: rgba(255, 255, 255, 0.25); /* button/nav hover */
-  --zoomora-primary:       #ff6b6b;                   /* accent / active state colour */
+  --zoomora-primary: #ff6b6b; /* accent / active state colour */
 }
 ```
 
@@ -300,7 +333,6 @@ For deeper customisation (fonts, thumbnail sizes, border radii) override the com
   font-family: 'Your Font', sans-serif;
   border-radius: 4px;
 }
-
 .zoomora-thumb.active {
   border-color: #ff6b6b;
 }
@@ -329,18 +361,34 @@ See [CHANGELOG.md](CHANGELOG.md) for a detailed list of changes.
 
 ### Recent Updates
 
-#### v1.3.0 (Latest)
-- ✨ **New**: `openImage()` API — open the lightbox programmatically without DOM elements ([#7](https://github.com/fronttheme/zoomora/issues/7))
+#### v1.4.0 (Latest)
+
+- ✨ **New**: `autoplayVideos` option — YouTube and local videos start when their slide opens
+- ✨ **New**: `data-thumbnail` attribute for custom thumbnail images
+- ✨ **New**: Enter / Space opens the lightbox from a focused trigger
+- 🐛 **Fixed**: Anchor (`<a>`) triggers showed blank thumbnails
+- 🐛 **Fixed**: Local videos kept playing after closing the lightbox
+- 🐛 **Fixed**: Empty caption box appeared when auto-hide brought controls back
+- 🔧 **Changed**: ES module build now has a real `export default` (UMD/CDN unchanged)
+
+#### v1.3.0
+
+- ✨ **New**: `openImage()` API — open the lightbox programmatically without DOM
+  elements ([#7](https://github.com/fronttheme/zoomora/issues/7))
 - ✨ **New**: Scroll-wheel and trackpad-pinch zoom
-- ✨ **New**: CSS custom properties for runtime theming (`--zoomora-overlay-bg`, `--zoomora-control-bg`, `--zoomora-control-hover`, `--zoomora-primary`)
+- ✨ **New**: CSS custom properties for runtime theming (`--zoomora-overlay-bg`, `--zoomora-control-bg`,
+  `--zoomora-control-hover`, `--zoomora-primary`)
 - 🐛 **Fixed**: `maxZoomScale` option now actually controls the zoom ceiling
 - 🐛 **Fixed**: `zoomStep` option now drives the scroll-wheel zoom increment
 - 🔧 **Updated**: Vite 8, Sass 1.101
 
 #### v1.2.1
-- 🐛 **Fixed**: `showZoom`, `showFullscreen`, `showCounter`, `showThumbnails` options not hiding their respective elements
+
+- 🐛 **Fixed**: `showZoom`, `showFullscreen`, `showCounter`, `showThumbnails` options not hiding their respective
+  elements
 
 #### v1.2.0
+
 - ✨ **New**: Background click to close lightbox
 - ✨ **New**: `closeOnBackgroundClick` configuration option
 - 🐛 **Fixed**: Smart click detection between media and background
@@ -362,6 +410,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👨‍💻 Author
 
 **Faruk Ahmed**
+
 - Website: [FrontTheme](https://fronttheme.com)
 - Portfolio: [farukdesign.com](https://www.farukdesign.com/)
 - GitHub: [@fronttheme](https://github.com/fronttheme)

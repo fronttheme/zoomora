@@ -8,7 +8,7 @@ export default defineConfig({
     cssCodeSplit: false,
     cssMinify: true,
     lib: {
-      entry: resolve(__dirname, 'src/zoomora.js'),
+      entry: resolve(import.meta.dirname, 'src/zoomora.js'),
       name: 'Zoomora',
       fileName: (format) => {
         if (format === 'umd') {

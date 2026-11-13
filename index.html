@@ -270,6 +270,10 @@
       font-weight: 600;
       font-size: 1.1rem;
     }
+    .gallery-extra {
+      text-align: center;
+      margin-top: 40px;
+    }
     /* Code Section */
     .code-showcase {
       padding: 100px 20px;
@@ -504,7 +508,7 @@
         <img src="assets/images/square-1.webp" alt="Misty morning in alpine meadow"
              data-src="assets/images/square-1.webp"
              data-caption="A serene alpine meadow shrouded in early morning mist"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Alpine</span>
@@ -514,7 +518,7 @@
       <div class="gallery-item">
         <img src="assets/images/large.webp" alt="Large image"
              data-src="assets/images/large.webp"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Large image</span>
@@ -524,7 +528,7 @@
       <div class="gallery-item">
         <img src="assets/images/small.webp" alt="Small image"
              data-src="assets/images/small.webp"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Small image</span>
@@ -536,7 +540,7 @@
              data-src="assets/videos/sample-video.mp4"
              data-type="video"
              data-caption="Discover the rhythm of nature through motion"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Motion</span>
@@ -548,7 +552,7 @@
              data-src="https://youtu.be/YE7VzlLtp-4?si=hVG4F47BHjgg_btE"
              data-type="video"
              data-caption="Experience cinematic storytelling in high definition"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Cinema</span>
@@ -559,7 +563,7 @@
         <img src="assets/images/portrait-3.webp" alt="Contemplative evening portrait"
              data-src="assets/images/portrait-3.webp"
              data-caption="Captured in the soft glow of twilight reflection"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Twilight</span>
@@ -570,7 +574,7 @@
         <img src="assets/images/square-2.webp" alt="Geometric concrete structure"
              data-src="assets/images/square-2.webp"
              data-caption="Where brutal modernism meets functional design"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Brutalist</span>
@@ -581,7 +585,7 @@
         <img src="assets/images/square-3.webp" alt="Wildflower meadow in bloom"
              data-src="assets/images/square-3.webp"
              data-caption="An explosion of color across rolling summer fields"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Botanical</span>
@@ -592,18 +596,27 @@
         <img src="assets/images/landscape-3.webp" alt="Coastal cliff at dusk"
              data-src="assets/images/landscape-3.webp"
              data-caption="Dramatic cliffs painted in the last light of day"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Coastal</span>
         </div>
       </div>
 
+      <a class="gallery-item" href="assets/images/landscape-5.jpg"
+         data-caption="Opened from a link — the thumbnail comes from the image inside"
+         data-zoomora="main-gallery">
+        <img src="assets/images/landscape-5.jpg" alt="Coastal cliff opened from a link" loading="lazy">
+        <div class="gallery-overlay">
+          <span class="gallery-label">Link</span>
+        </div>
+      </a>
+
       <div class="gallery-item">
         <img src="assets/images/portrait-1.webp" alt="Urban explorer in neon district"
              data-src="assets/images/portrait-1.webp"
              data-caption="Lost in the electric pulse of the city after dark"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Neon</span>
@@ -614,7 +627,7 @@
         <img src="assets/images/landscape-4.webp" alt="Abandoned railway through forest"
              data-src="assets/images/landscape-4.webp"
              data-caption="Where industry surrenders to the patient embrace of wilderness"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Forgotten</span>
@@ -625,7 +638,7 @@
         <img src="assets/images/portrait-4.webp" alt="Jazz musician in smoky venue"
              data-src="assets/images/portrait-4.webp"
              data-caption="Rhythm and soul intertwined in a moment of pure improvisation"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Rhythm</span>
@@ -636,7 +649,7 @@
         <img src="assets/images/portrait-5.webp" alt="Artist at work in studio"
              data-src="assets/images/portrait-5.webp"
              data-caption="Creation unfolds in the sacred chaos of the studio"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Creative</span>
@@ -647,13 +660,23 @@
         <img src="assets/images/portrait-2.webp" alt="Laughter between friends"
              data-src="assets/images/portrait-2.webp"
              data-caption="Genuine joy frozen in an unguarded instant"
-             data-zoomora="main-gallery"
+             data-zoomora="main-gallery" tabindex="0" role="button"
              loading="lazy">
         <div class="gallery-overlay">
           <span class="gallery-label">Genuine</span>
         </div>
       </div>
     </div>
+
+    <p class="gallery-extra">
+      <a class="btn btn-secondary"
+         href="https://youtu.be/YE7VzlLtp-4"
+         data-type="video"
+         data-thumbnail="assets/images/landscape-6.jpg"
+         data-caption="A text link with a custom thumbnail"
+         data-zoomora="main-gallery">▶ Watch the film</a>
+    </p>
+
   </div>
 </section>
 
@@ -667,13 +690,18 @@
     </div>
 
     <div class="code-tabs">
-      <button class="tab-btn active" onclick="showTab('npm')">NPM</button>
-      <button class="tab-btn" onclick="showTab('cdn')">CDN</button>
-      <button class="tab-btn" onclick="showTab('usage')">Usage</button>
+      <button class="tab-btn active" onclick="showTab('npm', this)">NPM</button>
+      <button class="tab-btn" onclick="showTab('cdn', this)">CDN</button>
+      <button class="tab-btn" onclick="showTab('usage', this)">Usage</button>
     </div>
 
     <div class="code-block active" id="npm">
-      <pre><code>npm install zoomora</code></pre>
+      <pre><code>npm install zoomora
+
+import Zoomora from 'zoomora';
+import 'zoomora/dist/zoomora.css';
+
+new Zoomora();</code></pre>
     </div>
 
     <div class="code-block" id="cdn">
@@ -706,6 +734,10 @@
     </div>
 
     <div class="shortcuts-grid">
+      <div class="shortcut-card">
+        <div class="shortcut-key">Enter</div>
+        <div class="shortcut-label">Open Focused Image</div>
+      </div>
       <div class="shortcut-card">
         <div class="shortcut-key">←</div>
         <div class="shortcut-label">Previous Image</div>
@@ -752,24 +784,22 @@
 </footer>
 
 <script src="dist/zoomora.umd.min.js"></script>
-<!--<script type="module" src="src/zoomora.js"></script>-->
+<script>
+  new Zoomora({
+    transition: 'fade',
+    maxZoomScale: 3,
+    autoplayVideos: true
+  });
+</script>
 
 <script>
   // Tab switching
-  function showTab(tabId) {
+  function showTab(tabId, button) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.code-block').forEach(block => block.classList.remove('active'));
-    event.target.classList.add('active');
+    button.classList.add('active');
     document.getElementById(tabId).classList.add('active');
   }
-
-  // Initialize Zoomora
-  document.addEventListener('DOMContentLoaded', function () {
-    new Zoomora({
-      transition: 'fade',
-      maxZoomScale: 3
-    });
-  });
 </script>
 </body>
 </html>
